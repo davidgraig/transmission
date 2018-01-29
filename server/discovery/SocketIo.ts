@@ -5,19 +5,18 @@ export class SocketIo {
 
     private io: SocketIO.Server;
 
-    constructor(port: number) {
-
+    constructor() {
         const server = httpServer.createServer();
         this.io = socketIo({
             pingInterval: 2000,
             pingTimeout: 5000,
             serveClient: false,
         });
-
-        this.io.attach(port);
     }
 
-    public listen() {
+    public listen(port: number) {
+        this.io.attach(port);
+
         this.io.on("connection", (socket: SocketIO.Socket) => {
             // todo: use this to create some webrtc signals.
 
