@@ -1,10 +1,11 @@
 import * as path from "path";
 import { SocketIo } from "./discovery/SocketIo";
+import { Sockets } from "./discovery/Sockets";
 import { Express } from "./http/Express";
 import { HttpServer } from "./http/HttpServer";
 
 const assetServer: HttpServer = new Express("./server/http/views", path.join(__dirname, "./../client"));
 assetServer.serve(process.env.PORT || 8080);
 
-const discoveryServer: SocketIo = new SocketIo();
+const discoveryServer: SocketIo = new SocketIo(new Sockets());
 discoveryServer.listen(process.env.discoveryPort || 3000);

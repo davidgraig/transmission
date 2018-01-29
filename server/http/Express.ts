@@ -14,7 +14,7 @@ export class Express implements HttpServer {
         this.mountRoutes();
     }
 
-    public serve(port) {
+    serve(port) {
         this.express.listen(port, (err) => {
             if (err) {
                 // todo: throw an exception.

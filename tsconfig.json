@@ -3,7 +3,9 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "bin",
-    "sourceMap": true
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
   },
   "include": [
     "server/**/*.ts",

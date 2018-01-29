@@ -1,12 +1,17 @@
 import * as httpServer from "http";
 import * as socketIo from "socket.io";
+import * as messages from "./messages";
+import { Socket } from "./Socket";
+import { Sockets } from "./Sockets";
 
 export class SocketIo {
 
     private io: SocketIO.Server;
+    private sockets: Sockets;
 
-    constructor() {
+    constructor(sockets: Sockets) {
         const server = httpServer.createServer();
+        this.sockets = sockets;
         this.io = socketIo({
             pingInterval: 2000,
             pingTimeout: 5000,
@@ -14,20 +19,10 @@ export class SocketIo {
         });
     }
 
-    public listen(port: number) {
+    listen(port: number) {
         this.io.attach(port);
-
-        this.io.on("connection", (socket: SocketIO.Socket) => {
-            // todo: use this to create some webrtc signals.
-
-            // tslint:disable-next-line:no-console
-            console.log("Connected: " + socket.client.id);
-
-            socket.on("disconnect", () => {
-                // tslint:disable-next-line:no-console
-                console.log("Disconnected: " + socket.client.id);
-            });
+        this.io.on(messages.Connection.signal, (socket: SocketIO.Socket) => {
+            this.sockets.addSocket(socket);
         });
     }
-
 }

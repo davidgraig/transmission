@@ -6,6 +6,8 @@
     "jsRules": {},
     "rules": {
         "interface-name": [true, "never-prefix"],
-        "no-any": true
+        "no-any": true,
+        "member-access": [true, "no-public"],
+        "max-line-length": [true, 180]
     }
 }
