@@ -1,13 +1,10 @@
-import app from "./App";
+import * as path from "path";
+import { SocketIo } from "./discovery/SocketIo";
+import { Express } from "./http/Express";
+import { HttpServer } from "./http/HttpServer";
 
-const port = process.env.PORT || 3000;
+const assetServer: HttpServer = new Express("./server/http/views", path.join(__dirname, "./../client"));
+assetServer.serve(process.env.PORT || 8080);
 
-app.listen(port, (err) => {
-  if (err) {
-    // tslint:disable-next-line:no-console
-    return console.log(err);
-  }
-
-  // tslint:disable-next-line:no-console
-  return console.log(`server is listening on ${port}`);
-});
+const discoveryServer: SocketIo = new SocketIo(process.env.discoveryPort || 3000);
+discoveryServer.listen();

@@ -4,7 +4,9 @@
         "tslint:recommended"
     ],
     "jsRules": {},
-    "rules": {},
-    "rulesDirectory": [],
-    "indent": [true, "spaces", 4]
+    "rules": {
+        "interface-name": [true, "never-prefix"],
+        "indent": [true, "spaces", 2],
+        "no-any": true
+    }
 }
