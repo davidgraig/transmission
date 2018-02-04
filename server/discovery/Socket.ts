@@ -1,4 +1,3 @@
-import { JsonSerializable } from "./messages/JsonSerializable";
 import { Sockets } from "./Sockets";
 
 export class Socket {
@@ -25,7 +24,7 @@ export class Socket {
         delete this.channels[channel];
     }
 
-    emit(message: string, data?: JsonSerializable) {
+    emit(message: string, data: string) {
         this.socket.emit(message, data);
     }
 }

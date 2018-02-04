@@ -8,6 +8,7 @@
         "interface-name": [true, "never-prefix"],
         "no-any": true,
         "member-access": [true, "no-public"],
-        "max-line-length": [true, 180]
+        "max-line-length": [true, 180],
+        "experimentalDecorators": true
     }
 }

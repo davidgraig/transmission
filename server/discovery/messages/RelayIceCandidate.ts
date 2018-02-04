@@ -1,7 +1,7 @@
 import {JsonProperty} from "json-typescript-mapper";
-import { JsonSerializable } from "./JsonSerializable";
+import { IceCandidate } from "./IceCandidate";
 
-export class RelayIceCandidate extends JsonSerializable {
+export class RelayIceCandidate {
     static signal = "relayIceCandidate";
 
     @JsonProperty("targetSocketId")

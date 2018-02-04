@@ -1,3 +1,3 @@
 export class Connection {
-    static signal = "connection";
+    static signal = "connect";
 }

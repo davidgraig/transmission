@@ -1,7 +1,6 @@
 import {JsonProperty} from "json-typescript-mapper";
-import { JsonSerializable } from "./JsonSerializable";
 
-export class Join extends JsonSerializable {
+export class Join {
     static signal = "join";
 
     @JsonProperty("channel")
