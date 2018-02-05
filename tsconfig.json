@@ -6,6 +6,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "types": ["webrtc"]
   },
   "include": [
     "server/**/*.ts",

@@ -59,9 +59,7 @@ export class Sockets {
     private onRelaySessionDescription(socket: Socket, jsonString: string) {
         const message = deserialize(messages.RelaySessionDescription, JSON.parse(jsonString));
         log.debug(`relaying socket description from ${socket.id} to ${message.targetSocketId}`);
-        const sessionDescription = new messages.SessionDescription();
-        sessionDescription.sessionDescription = message.sessionDescription;
-        this.sockets.get(message.targetSocketId).emit(messages.SessionDescription.signal, JSON.stringify(sessionDescription));
+        this.sockets.get(message.targetSocketId).emit(messages.SessionDescription.signal, JSON.stringify(message.sessionDescription));
     }
 
     private leave(socket: Socket, channel: string) {

@@ -67,9 +67,15 @@ class Discovery {
             peerConnection.createOffer((description) => {
                 this.log(`local offer description: \n\n ${description.sdp}`);
                 peerConnection.setLocalDescription(description, () => {
+
+                    const sessionDescription = new messages.SessionDescription();
+                    sessionDescription.type = description.type;
+                    sessionDescription.sdp = description.sdp;
+
                     const relaySessionDescription = new messages.RelaySessionDescription();
                     relaySessionDescription.targetSocketId = addPeerMessage.id;
-                    relaySessionDescription.sessionDescription = JSON.stringify(description);
+                    relaySessionDescription.sessionDescription = sessionDescription;
+
                     const messageString = JSON.stringify(relaySessionDescription);
                     this.log(`sending session description ${messageString} to ${addPeerMessage.id} via discovery server`);
                     this.socket.emit(messages.RelaySessionDescription.signal, messageString);

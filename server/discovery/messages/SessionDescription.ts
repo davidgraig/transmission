@@ -3,10 +3,14 @@ import { JsonProperty } from "json-typescript-mapper";
 export class SessionDescription {
     static signal = "sessionDescription";
 
-    @JsonProperty("sessionDescription")
-    sessionDescription: string;
+    @JsonProperty("type")
+    type: string;
+
+    @JsonProperty("sdp")
+    sdp: string;
 
     constructor() {
-        this.sessionDescription = undefined;
+        this.type = undefined;
+        this.sdp = undefined;
     }
 }
