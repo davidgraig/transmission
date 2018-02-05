@@ -1,4 +1,4 @@
-import {JsonProperty} from "json-typescript-mapper";
+import { JsonProperty } from "json-typescript-mapper";
 import { IceCandidate } from "./IceCandidate";
 
 export class RelayIceCandidate {
@@ -9,4 +9,9 @@ export class RelayIceCandidate {
 
     @JsonProperty("iceCandidate")
     iceCandidate: string;
+
+    constructor() {
+        this.targetSocketId = undefined;
+        this.iceCandidate = undefined;
+    }
 }

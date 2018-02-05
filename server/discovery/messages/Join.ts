@@ -5,4 +5,8 @@ export class Join {
 
     @JsonProperty("channel")
     channel: string;
+
+    constructor() {
+        this.channel = undefined;
+    }
 }

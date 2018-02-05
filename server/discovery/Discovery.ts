@@ -22,6 +22,10 @@ export class Discovery {
 
     listen(port: number) {
         this.io.attach(port);
-        const namespace = this.io.on(messages.Connection.signal, (socket: SocketIO.Socket) => { this.sockets.addSocket(socket); });
+        const namespace = this.io.on(messages.Connection.signal, (socket: SocketIO.Socket) => {
+            log.debug(`socket connected: ${socket.id}`);
+            this.sockets.addSocket(socket);
+        });
+        log.info(`Discovery server is running on namespace ${namespace.name}`);
     }
 }

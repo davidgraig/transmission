@@ -8,4 +8,9 @@ export class AddPeer {
 
     @JsonProperty("createOffer")
     createOffer: boolean;
+
+    constructor() {
+        this.id = undefined;
+        this.createOffer = undefined;
+    }
 }

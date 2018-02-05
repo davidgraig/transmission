@@ -1,4 +1,4 @@
-import {JsonProperty} from "json-typescript-mapper";
+import { JsonProperty } from "json-typescript-mapper";
 
 export class RelaySessionDescription {
     static signal = "relaySessionDescription";
@@ -8,4 +8,9 @@ export class RelaySessionDescription {
 
     @JsonProperty("sessionDescription")
     sessionDescription: string;
+
+    constructor() {
+        this.targetSocketId = undefined;
+        this.sessionDescription = undefined;
+    }
 }

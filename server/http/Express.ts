@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as path from "path";
+import * as log from "winston";
 import { HttpServer } from "./HttpServer";
 
 export class Express implements HttpServer {
@@ -18,11 +19,10 @@ export class Express implements HttpServer {
         this.express.listen(port, (err) => {
             if (err) {
                 // todo: throw an exception.
-                // tslint:disable-next-line:no-console
-                return console.log(err);
+                return log.error("Error starting HTTP server", err);
             }
-            // tslint:disable-next-line:no-console
-            return console.log(`server is listening on ${port}`);
+
+            return log.info(`HTTP server is listening on ${port} for requests for static resources`);
         });
     }
 
