@@ -1,17 +1,15 @@
-import { JsonProperty } from "json-typescript-mapper";
-import { SessionDescription } from "./SessionDescription";
+import { SessionDescriptionType } from "./SessionDescriptionType";
 
 export class RelaySessionDescription {
     static signal = "relaySessionDescription";
 
-    @JsonProperty("targetSocketId")
     targetSocketId: string;
+    type: SessionDescriptionType;
+    sdp: string;
 
-    @JsonProperty({clazz: SessionDescription})
-    sessionDescription: SessionDescription;
-
-    constructor() {
-        this.targetSocketId = undefined;
-        this.sessionDescription = undefined;
+    constructor(targetSocketId: string, type: SessionDescriptionType, sdp: string) {
+        this.targetSocketId = targetSocketId;
+        this.type = type;
+        this.sdp = sdp;
     }
 }

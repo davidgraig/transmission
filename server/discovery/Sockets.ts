@@ -1,4 +1,3 @@
-import { deserialize } from "json-typescript-mapper";
 import * as log from "winston";
 import * as messages from "./messages/";
 import { Socket } from "./Socket";
@@ -12,26 +11,22 @@ export class Sockets {
         const socket = new Socket(webSocket);
         this.sockets.set(webSocket.id, socket);
 
-        webSocket.on(messages.Join.signal, (jsonString: string) => { this.onSocketJoin(socket, jsonString); });
+        webSocket.on(messages.Join.signal, (join: messages.Join) => { this.onSocketJoin(socket, join); });
         webSocket.on(messages.Disconnect.signal, () => { this.onSocketDisconnect(this.sockets.get(webSocket.id)); });
-        webSocket.on(messages.Leave.signal, (jsonString: string) => { this.leave(socket, deserialize(messages.Leave, JSON.parse(jsonString)).channel); });
-        webSocket.on(messages.RelayIceCandidate.signal, (jsonString: string) => this.onRelayIceCandidate(socket, jsonString));
-        webSocket.on(messages.RelaySessionDescription.signal, (jsonString: string) => this.onRelaySessionDescription(socket, jsonString));
+        webSocket.on(messages.Leave.signal, (leave: messages.Leave) => { this.leave(socket, leave.channel); });
+        webSocket.on(messages.RelayIceCandidate.signal, (message: messages.RelayIceCandidate) => this.onRelayIceCandidate(socket, message));
+        webSocket.on(messages.RelaySessionDescription.signal, (message: messages.RelaySessionDescription) => this.onRelaySessionDescription(socket, message));
     }
 
-    private onSocketJoin(socket: Socket, joinJsonString: string): void {
-        const join = deserialize(messages.Join, JSON.parse(joinJsonString));
-
+    private onSocketJoin(socket: Socket, join: messages.Join): void {
         if (!this.socketsByChannel.has(join.channel)) {
             log.debug(`Creating channel ${join.channel}`);
             this.socketsByChannel.set(join.channel, new Map<string, Socket>());
         }
         log.debug(`socket ${socket.id} joined ${join.channel}`);
 
-        const addPeer = new messages.AddPeer();
-        addPeer.id = socket.id;
-        addPeer.createOffer = false;
-        this.broadcast(join.channel, messages.AddPeer.signal, JSON.stringify(addPeer));
+        const addPeer = new messages.AddPeer(socket.id, false);
+        this.broadcast(join.channel, messages.AddPeer.signal, addPeer);
         this.sendPeerChannelMembers(socket, join.channel);
 
         this.socketsByChannel.get(join.channel).set(socket.id, socket);
@@ -42,24 +37,23 @@ export class Sockets {
         log.debug(`socket disconnected: ${socket.id}`);
         for (const channel of socket.channels) {
             this.leave(socket, channel);
-            const removePeer = new messages.RemovePeer();
-            removePeer.peerId = socket.id;
-            this.broadcast(channel, messages.RemovePeer.signal, JSON.stringify(removePeer));
+            const removePeer = new messages.RemovePeer(socket.id);
+            this.broadcast(channel, messages.RemovePeer.signal, removePeer);
         }
         this.sockets.delete(socket.id);
     }
 
-    private onRelayIceCandidate(socket: Socket, jsonString: string) {
-        const message = deserialize(messages.RelayIceCandidate, JSON.parse(jsonString));
-        const iceCandidate = new messages.IceCandidate();
-        iceCandidate.iceCandidate = message.iceCandidate;
-        this.sockets.get(message.targetSocketId).emit(messages.IceCandidate.signal, JSON.stringify(iceCandidate));
+    private onRelayIceCandidate(socket: Socket, message: messages.RelayIceCandidate) {
+        const iceCandidate = new messages.IceCandidate(message.iceCandidate);
+        this.sockets.get(message.targetSocketId).emit(messages.IceCandidate.signal, iceCandidate);
     }
 
-    private onRelaySessionDescription(socket: Socket, jsonString: string) {
-        const message = deserialize(messages.RelaySessionDescription, JSON.parse(jsonString));
-        log.debug(`relaying socket description from ${socket.id} to ${message.targetSocketId}`);
-        this.sockets.get(message.targetSocketId).emit(messages.SessionDescription.signal, JSON.stringify(message.sessionDescription));
+    private onRelaySessionDescription(socket: Socket, message: messages.RelaySessionDescription) {
+        if (this.sockets.has(message.targetSocketId)) {
+            log.debug(`relaying socket description ${message.type} from ${socket.id} to ${message.targetSocketId}.`);
+            const sessionDescription = new messages.SessionDescription(socket.id, message.type, message.sdp);
+            this.sockets.get(message.targetSocketId).emit(messages.SessionDescription.signal, sessionDescription);
+        }
     }
 
     private leave(socket: Socket, channel: string) {
@@ -72,11 +66,11 @@ export class Sockets {
         }
     }
 
-    private broadcast(channel: string, message: string, data: string) {
+    // tslint:disable-next-line:no-any
+    private broadcast(channel: string, message: string, data: any) {
         if (this.socketsByChannel.has(channel)) {
             const channelSockets: Map<string, Socket> = this.socketsByChannel.get(channel);
             channelSockets.forEach((socket: Socket, key: string) => {
-                log.debug(`Broadcasting ${message} with data ${data} to ${socket.id}`);
                 socket.emit(message, data);
             });
         }
@@ -84,10 +78,8 @@ export class Sockets {
 
     private sendPeerChannelMembers(socket: Socket, channelName: string) {
         for (const socketId of this.socketsByChannel.get(channelName).keys()) {
-            const peer = new messages.AddPeer();
-            peer.id = socketId;
-            peer.createOffer = true;
-            socket.emit(messages.AddPeer.signal, JSON.stringify(peer));
+            const peer = new messages.AddPeer(socketId, true);
+            socket.emit(messages.AddPeer.signal, peer);
         }
     }
 }

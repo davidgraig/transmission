@@ -24,7 +24,8 @@ export class Socket {
         delete this.channels[channel];
     }
 
-    emit(message: string, data: string) {
+    // tslint:disable-next-line:no-any
+    emit(message: string, data: any) {
         this.socket.emit(message, data);
     }
 }

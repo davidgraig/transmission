@@ -1,16 +1,15 @@
-import { JsonProperty } from "json-typescript-mapper";
+import { SessionDescriptionType } from "./SessionDescriptionType";
 
 export class SessionDescription {
     static signal = "sessionDescription";
 
-    @JsonProperty("type")
-    type: string;
-
-    @JsonProperty("sdp")
+    senderSocketId: string;
+    type: SessionDescriptionType;
     sdp: string;
 
-    constructor() {
-        this.type = undefined;
-        this.sdp = undefined;
+    constructor(sender: string, type: SessionDescriptionType, sdp: string) {
+        this.senderSocketId = sender;
+        this.type = type;
+        this.sdp = sdp;
     }
 }

@@ -9,6 +9,7 @@
         "no-any": true,
         "member-access": [true, "no-public"],
         "max-line-length": [true, 180],
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
     }
 }

@@ -1,12 +1,9 @@
-import { JsonProperty } from "json-typescript-mapper";
-
 export class RemovePeer {
     static signal = "removePeer";
 
-    @JsonProperty("peerId")
     peerId: string;
 
-    constructor() {
-        this.peerId = undefined;
+    constructor(peerId: string) {
+        this.peerId = peerId;
     }
 }
