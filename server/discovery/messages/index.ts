@@ -5,6 +5,5 @@ export { RemovePeer } from "./RemovePeer";
 export { Connection } from "./Connection";
 export { Leave } from "./Leave";
 export { RelayIceCandidate } from "./RelayIceCandidate";
-export { IceCandidate } from "./IceCandidate";
 export { RelaySessionDescription } from "./RelaySessionDescription";
 export { SessionDescriptionType, SessionDescriptionTypes } from "./SessionDescriptionType";

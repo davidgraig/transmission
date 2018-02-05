@@ -44,8 +44,12 @@ export class Sockets {
     }
 
     private onRelayIceCandidate(socket: Socket, message: messages.RelayIceCandidate) {
-        const iceCandidate = new messages.IceCandidate(message.iceCandidate);
-        this.sockets.get(message.targetSocketId).emit(messages.IceCandidate.signal, iceCandidate);
+        if (this.sockets.has(message.socketId)) {
+            log.debug(`relaying ice candidate from ${socket.id} to ${message.socketId}.`);
+            const targetId = message.socketId;
+            message.socketId = socket.id;
+            this.sockets.get(targetId).emit(messages.RelayIceCandidate.signal, message);
+        }
     }
 
     private onRelaySessionDescription(socket: Socket, message: messages.RelaySessionDescription) {

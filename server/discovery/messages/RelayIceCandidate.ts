@@ -1,13 +1,11 @@
-import { IceCandidate } from "./IceCandidate";
-
 export class RelayIceCandidate {
     static signal = "relayIceCandidate";
 
-    targetSocketId: string;
-    iceCandidate: string;
+    socketId: string;
+    iceCandidate: RTCIceCandidate;
 
-    constructor(targetSocketId: string, iceCandidate: string) {
-        this.targetSocketId = targetSocketId;
+    constructor(socketId: string, iceCandidate: RTCIceCandidate) {
+        this.socketId = socketId;
         this.iceCandidate = iceCandidate;
     }
 }
