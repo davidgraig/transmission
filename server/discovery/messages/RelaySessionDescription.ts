@@ -3,13 +3,11 @@ import { SessionDescriptionType } from "./SessionDescriptionType";
 export class RelaySessionDescription {
     static signal = "relaySessionDescription";
 
-    targetSocketId: string;
-    type: SessionDescriptionType;
-    sdp: string;
+    socketId: string;
+    description: RTCSessionDescription;
 
-    constructor(targetSocketId: string, type: SessionDescriptionType, sdp: string) {
-        this.targetSocketId = targetSocketId;
-        this.type = type;
-        this.sdp = sdp;
+    constructor(socketId: string, description: RTCSessionDescription) {
+        this.socketId = socketId;
+        this.description = description;
     }
 }

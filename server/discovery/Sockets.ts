@@ -49,10 +49,11 @@ export class Sockets {
     }
 
     private onRelaySessionDescription(socket: Socket, message: messages.RelaySessionDescription) {
-        if (this.sockets.has(message.targetSocketId)) {
-            log.debug(`relaying socket description ${message.type} from ${socket.id} to ${message.targetSocketId}.`);
-            const sessionDescription = new messages.SessionDescription(socket.id, message.type, message.sdp);
-            this.sockets.get(message.targetSocketId).emit(messages.SessionDescription.signal, sessionDescription);
+        if (this.sockets.has(message.socketId)) {
+            log.debug(`relaying socket description ${message.description.type} from ${socket.id} to ${message.socketId}.`);
+            const targetId = message.socketId;
+            message.socketId = socket.id;
+            this.sockets.get(targetId).emit(messages.RelaySessionDescription.signal, message);
         }
     }
 

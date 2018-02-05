@@ -23,7 +23,7 @@ class Discovery {
         });
         this.socket.on(messages.Disconnect.signal, () => { this.onDisconnect(); });
         this.socket.on(messages.AddPeer.signal, (message: messages.AddPeer) => { this.onAddPeer(message); });
-        this.socket.on(messages.SessionDescription.signal, (message: messages.SessionDescription) => { this.onSessionDescription(message); });
+        this.socket.on(messages.RelaySessionDescription.signal, (message: messages.RelaySessionDescription) => { this.onSessionDescription(message); });
         this.socket.on(messages.IceCandidate.signal, (message: messages.IceCandidate) => { this.onIceCandidate(message); });
         this.socket.on(messages.RemovePeer.signal, (message: messages.RemovePeer) => { this.onRemovePeer(message); });
     }
@@ -58,7 +58,7 @@ class Discovery {
             this.log(`creating offer for peer ${addPeerMessage.id}`);
             peerConnection.createOffer((description) => {
                 peerConnection.setLocalDescription(description, () => {
-                    const relaySessionDescription = new messages.RelaySessionDescription(addPeerMessage.id, description.type, description.sdp);
+                    const relaySessionDescription = new messages.RelaySessionDescription(addPeerMessage.id, description);
                     this.log(`sending session description to ${addPeerMessage.id} via discovery server`);
                     this.socket.emit(messages.RelaySessionDescription.signal, relaySessionDescription);
                 });
@@ -68,18 +68,17 @@ class Discovery {
         }
     }
 
-    private onSessionDescription(description: messages.SessionDescription) {
-        this.log(`got session description from ${description.senderSocketId}`);
-        if (this.peers.has(description.senderSocketId)) {
-            const peer = this.peers.get(description.senderSocketId);
-            const remoteDescription = new RTCSessionDescription({sdp: description.sdp, type: description.type});
-            peer.setRemoteDescription(remoteDescription, () => {
+    private onSessionDescription(message: messages.RelaySessionDescription) {
+        this.log(`got session description from ${message.socketId}`);
+        if (this.peers.has(message.socketId)) {
+            const peer = this.peers.get(message.socketId);
+            peer.setRemoteDescription(message.description, () => {
                 this.log("Set remote description successfully...");
-                if (remoteDescription.type === messages.SessionDescriptionTypes.Offer) {
+                if (message.description.type === messages.SessionDescriptionTypes.Offer) {
                     this.log("... creating answer");
                     peer.createAnswer((localDescription) => {
                         peer.setLocalDescription(localDescription, () => {
-                            const relaySessionDescription = new messages.RelaySessionDescription(description.senderSocketId, localDescription.type, localDescription.sdp);
+                            const relaySessionDescription = new messages.RelaySessionDescription(message.socketId, localDescription);
                             this.socket.emit(messages.RelaySessionDescription.signal, relaySessionDescription);
                         }, (error) => {
                             this.log(`setting local description answer failed: ${error}`);

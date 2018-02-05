@@ -7,5 +7,4 @@ export { Leave } from "./Leave";
 export { RelayIceCandidate } from "./RelayIceCandidate";
 export { IceCandidate } from "./IceCandidate";
 export { RelaySessionDescription } from "./RelaySessionDescription";
-export { SessionDescription } from "./SessionDescription";
 export { SessionDescriptionType, SessionDescriptionTypes } from "./SessionDescriptionType";
