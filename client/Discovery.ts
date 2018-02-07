@@ -5,6 +5,8 @@ import { IceConfig } from "../server/discovery/rtc/IceConfig";
 
 class Discovery {
 
+    private useMedia = false;
+
     private textAreaElement: HTMLTextAreaElement;
     private mediaDivElement: HTMLDivElement;
     private socket: SocketIO.Server;
@@ -20,14 +22,18 @@ class Discovery {
         this.socket = socketIo("http://127.0.0.1:3000", {transports: ["websocket", "polling", "flashsocket"]});
         this.socket.on(messages.Connection.signal, () => {
             this.log("Connected to signaling server");
-            this.initMediaDevices((accessGranted) => {
-                if (accessGranted) {
-                    this.log("media attached.");
-                    this.sendJoinSignal();
-                } else {
-                    this.log("media was forbidden, demo will not work");
-                }
-            });
+            if (this.useMedia) {
+                this.initMediaDevices((accessGranted) => {
+                    if (accessGranted) {
+                        this.log("media attached.");
+                        this.sendJoinSignal();
+                    } else {
+                        this.log("media was forbidden, demo will not work");
+                    }
+                });
+            } else {
+                this.sendJoinSignal();
+            }
         });
         this.socket.on(messages.Disconnect.signal, () => { this.onDisconnect(); });
         this.socket.on(messages.AddPeer.signal, (message: messages.AddPeer) => { this.onAddPeer(message); });
@@ -69,20 +75,15 @@ class Discovery {
             this.socket.emit(messages.RelayIceCandidate.signal, relayIceCandidate);
         };
 
-        peerConnection.onaddstream = (event: MediaStreamEvent) => {
-            this.log("remote media received");
-            const videoElement = document.createElement("video") as HTMLVideoElement;
-            this.setupVideoElementInDOM(videoElement, event.stream);
-            this.peerMediaElements.set(addPeerMessage.id, videoElement);
-        };
-
-        peerConnection.addStream(this.localMediaStream);
-
-        // TODO: https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Simple_RTCDataChannel_sample
-        // peerConnection.ondatachannel = (event: RTCDataChannelEvent) => {
-        //     // TODO: raw data (i.e. maybe some text protocol?)
-        // };
-        // peerConnection.createDataChannel("someChannel", {});
+        if (this.useMedia) {
+            peerConnection.onaddstream = (event: MediaStreamEvent) => {
+                this.log("remote media received");
+                const videoElement = document.createElement("video") as HTMLVideoElement;
+                this.setupVideoElementInDOM(videoElement, event.stream);
+                this.peerMediaElements.set(addPeerMessage.id, videoElement);
+            };
+            peerConnection.addStream(this.localMediaStream);
+        }
 
         if (addPeerMessage.createOffer) {
             this.log(`creating offer for peer ${addPeerMessage.id}`);
