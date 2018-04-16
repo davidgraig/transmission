@@ -15,8 +15,8 @@ log.configure({
 
 log.info("Logging configured.");
 
-var viewPath = "./server/http/views";
-var staticAssetPath = path.join(__dirname, "./../webpack");
+var viewPath = "./src/http/views";
+var staticAssetPath = path.join(__dirname, "./static");
 const assetServer: HttpServer = new Express(viewPath, staticAssetPath);
 assetServer.serve(process.env.PORT || 8080);
 

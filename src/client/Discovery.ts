@@ -1,7 +1,7 @@
 import * as socketIo from "socket.io-client";
-import * as messages from "../server/discovery/messages/index";
-import * as rtc from "../server/discovery/rtc";
-import { IceConfig } from "../server/discovery/rtc/IceConfig";
+import * as messages from "../discovery/messages/index";
+import * as rtc from "../discovery/rtc";
+import { IceConfig } from "../discovery/rtc/IceConfig";
 import * as Collections from 'typescript-collections';
 
 class Discovery {
@@ -12,7 +12,7 @@ class Discovery {
     private mediaDivElement: HTMLDivElement;
 
     private socketId: string;
-    private socket: SocketIO.Server;
+    private socket: SocketIOClient.Socket;
     private lobby = "lobby";
     private iceServers = {iceServers: [{ urls: [
         "stun:stun.l.google.com:19302"
