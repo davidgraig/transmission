@@ -15,7 +15,9 @@ log.configure({
 
 log.info("Logging configured.");
 
-const assetServer: HttpServer = new Express("./server/http/views", path.join(__dirname, "./../client"));
+var viewPath = "./server/http/views";
+var staticAssetPath = path.join(__dirname, "./../webpack");
+const assetServer: HttpServer = new Express(viewPath, staticAssetPath);
 assetServer.serve(process.env.PORT || 8080);
 
 const discoveryServer: Discovery = new Discovery(new Sockets());

@@ -1,0 +1,13 @@
+body {
+    background-color: #333333;
+    color: cornflowerblue;
+    margin:10px;
+    font-family: sans-serif;
+}
+
+div {
+    height:7.0em; 
+    width:calc(100%); 
+    font-family: serif; 
+    font-size: 1em;
+}

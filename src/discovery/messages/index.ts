@@ -1,4 +1,5 @@
 export { Join } from "./Join";
+export { Joined } from "./Joined";
 export { Disconnect } from "./Disconnect";
 export { AddPeer } from "./AddPeer";
 export { RemovePeer } from "./RemovePeer";

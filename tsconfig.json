@@ -9,8 +9,7 @@
     "types": ["webrtc"]
   },
   "include": [
-    "server/**/*.ts",
-    "client/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules"

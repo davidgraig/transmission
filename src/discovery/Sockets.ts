@@ -19,6 +19,7 @@ export class Sockets {
     }
 
     private onSocketJoin(socket: Socket, join: messages.Join): void {
+        log.debug(`got socket join message from ${socket.id}`);
         if (!this.socketsByChannel.has(join.channel)) {
             log.debug(`Creating channel ${join.channel}`);
             this.socketsByChannel.set(join.channel, new Map<string, Socket>());
@@ -27,10 +28,11 @@ export class Sockets {
 
         const addPeer = new messages.AddPeer(socket.id, false);
         this.broadcast(join.channel, messages.AddPeer.signal, addPeer);
-        this.sendPeerChannelMembers(socket, join.channel);
+        this.sendChannelMembersToPeer(socket, join.channel);
 
         this.socketsByChannel.get(join.channel).set(socket.id, socket);
         socket.addChannel(join.channel);
+        socket.emit(messages.Joined.signal, new messages.Joined(socket.id, join.channel));
     }
 
     private onSocketDisconnect(socket: Socket) {
@@ -44,8 +46,9 @@ export class Sockets {
     }
 
     private onRelayIceCandidate(socket: Socket, message: messages.RelayIceCandidate) {
+        log.debug(`got relay ice candidate message from ${socket.id}`);
         if (this.sockets.has(message.socketId)) {
-            log.debug(`relaying ice candidate from ${socket.id} to ${message.socketId}.`);
+            log.debug(`relaying ice candidate from ${socket.id} to ${message.socketId}. details: ${JSON.stringify(message)}`);
             const targetId = message.socketId;
             message.socketId = socket.id;
             this.sockets.get(targetId).emit(messages.RelayIceCandidate.signal, message);
@@ -53,6 +56,7 @@ export class Sockets {
     }
 
     private onRelaySessionDescription(socket: Socket, message: messages.RelaySessionDescription) {
+        log.debug(`got relay session description from ${socket.id}`);
         if (this.sockets.has(message.socketId)) {
             log.debug(`relaying socket description ${message.description.type} from ${socket.id} to ${message.socketId}.`);
             const targetId = message.socketId;
@@ -73,18 +77,25 @@ export class Sockets {
 
     // tslint:disable-next-line:no-any
     private broadcast(channel: string, message: string, data: any) {
+        log.debug(`broadcasting message ${message} with data ${JSON.stringify(data)} to channel ${channel}`);
         if (this.socketsByChannel.has(channel)) {
             const channelSockets: Map<string, Socket> = this.socketsByChannel.get(channel);
             channelSockets.forEach((socket: Socket, key: string) => {
+                log.debug(`sending broadcast message to ${socket.id}`);
                 socket.emit(message, data);
             });
+            log.debug(`Done broadcasting to channel ${channel}`);
         }
     }
 
-    private sendPeerChannelMembers(socket: Socket, channelName: string) {
-        for (const socketId of this.socketsByChannel.get(channelName).keys()) {
-            const peer = new messages.AddPeer(socketId, true);
+    private sendChannelMembersToPeer(socket: Socket, channelName: string) {
+        log.debug(`sending channel members to socket ${socket.id}`);
+
+        this.socketsByChannel.get(channelName).forEach((peerSocket: Socket, key: string) => {
+            log.debug(`sending ${peerSocket.id} to ${socket.id}`);
+            const peer = new messages.AddPeer(peerSocket.id, true);
             socket.emit(messages.AddPeer.signal, peer);
-        }
+        });
+        log.debug(`done sending channel members to ${socket.id}`);
     }
 }

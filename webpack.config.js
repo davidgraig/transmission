@@ -1,17 +1,16 @@
 module.exports = {
     devtool: 'inline-source-map',
-    entry: './client/Discovery.ts',
+    entry: './src/client/Discovery.ts',
     output: {
-        filename: './bin/client/bundle.js'
+        filename: './bin/static/bundle.js'
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: ['.js', '.ts', '.tsx']
+        extensions: ['.js', '.ts', '.tsx', ]
     },
     module: {
         rules: [
-            // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-            { test: /\.tsx?$/, loader: 'ts-loader' }
+            { test: /\.tsx?$/, loader: 'ts-loader' } // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
         ]
     },
     node: {
